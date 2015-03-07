@@ -1,17 +1,24 @@
 require_relative '04_associatable2'
+require 'byebug'
+
+module Searchable
+  def where(params)
+    Relation.new(self, params)
+  end
+end
 
 class Relation
-  extend Searchable
+  include Searchable
 
   attr_accessor :sqlobj, :obj, :params
 
   def initialize(obj, params)
-    if obj is_a? SQLObject
-      @sqlobj = sqlobj
-      @params = params
-    elsif obj is_a? Relation
+    if obj.class.to_s == "Relation"
       @sqlobj = obj.sqlobj
       @params = obj.params.merge(params)
+    elsif obj.class.to_s == "Class" && obj.superclass == SQLObject
+      @sqlobj = obj
+      @params = params
     else
       raise "cannot compute relation"
     end
@@ -33,8 +40,25 @@ class Relation
   end
 end
 
-module Searchable
-  def where(params)
-    Relation.new(self, params)
-  end
-end
+# class Associatable
+#   def has_many_through(name, through_name, source_name)
+#     define_method(name) do
+#       through_options = self.class.assoc_options[through_name]
+#       source_options = through_options.model_class.assoc_options[source_name]
+#       through_table = through_options.table_name
+#       source_table = source_options.table_name
+#       source_options.model_class.parse_all(DBConnection.execute(<<-SQL)).first
+#         SELECT
+#           #{source_table}.*
+#         FROM
+#           #{through_table}
+#         JOIN
+#           #{source_table} ON #{through_table}.#{source_options.foreign_key} = #{source_table}.#{source_options.primary_key}
+#         WHERE
+#           #{through_table}.#{through_options.primary_key} = #{self.send(through_options.foreign_key)}
+#       SQL
+#     end
+#   end
+# end
+
+# ^^^^  this is just copy-pasted and doesn't work yet.
