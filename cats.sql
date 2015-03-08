@@ -20,6 +20,15 @@ CREATE TABLE houses (
   address VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE cat_toys (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  cat_id INTEGER,
+
+  FOREIGN KEY(cat_id) REFERENCES cat(id)
+);
+
+
 INSERT INTO
   houses (id, address)
 VALUES
@@ -41,4 +50,12 @@ VALUES
   (2, "Earl", 2),
   (3, "Haskell", 3),
   (4, "Markov", 3),
-  (5, "Stray Cat", NULL);
+  (5, "Stray Cat", NULL),
+  (6, "Kitty", 1);
+
+INSERT INTO
+  cat_toys (id, name, cat_id)
+VALUES
+  (1, "Yellow Ball", 1),
+  (2, "Dingly Mouse", 1),
+  (3, "Green Ball", 6);

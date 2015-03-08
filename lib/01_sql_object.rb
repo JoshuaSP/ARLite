@@ -4,7 +4,7 @@ require 'byebug'
 # NB: the attr_accessor we wrote in phase 0 is NOT used in the rest
 # of this project. It was only a warm up.
 
-class SQLObject
+class SQLObject  
   def self.columns
     @columns ||= DBConnection.execute2(<<-SQL).first.map { |col| col.to_sym }
       SELECT
@@ -126,6 +126,12 @@ class SQLObject
       end
     else
       insert
+    end
+  end
+
+  def ==(obj)
+    @attributes.all? do |attrib, val|
+      val = obj.send(attrib)
     end
   end
 end

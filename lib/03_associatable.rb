@@ -54,6 +54,7 @@ module Associatable
 
   def has_many(name, options = {})
     options = HasManyOptions.new(name, self.to_s, options)
+    assoc_options[name] = options
     define_method(name) do
       options.model_class.parse_all(DBConnection.execute(<<-SQL))
         SELECT

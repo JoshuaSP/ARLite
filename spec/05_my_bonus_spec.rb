@@ -7,6 +7,7 @@ describe 'Bonus' do
   before(:all) do
     class Cat < SQLObject
       belongs_to :human, foreign_key: :owner_id
+      has_many :cat_toys
 
       finalize!
     end
@@ -15,6 +16,7 @@ describe 'Bonus' do
       self.table_name = 'humans'
 
       has_many :cats, foreign_key: :owner_id
+      has_many_through :cat_toys, :cats, :cat_toys
       belongs_to :house
 
       finalize!
@@ -22,6 +24,12 @@ describe 'Bonus' do
 
     class House < SQLObject
       has_many :humans
+
+      finalize!
+    end
+
+    class CatToy < SQLObject
+      belongs_to :cat
 
       finalize!
     end
@@ -39,6 +47,17 @@ describe 'Bonus' do
 
     it "can chain multiple wheres" do
       expect(human_where.where(house_id: 3).all[0].lname).to eq("Walker")
+    end
+  end
+
+  describe '#has_many_through' do
+
+    it 'works' do
+      devon = Human.find(1)
+      cat_toy1 = CatToy.find(1)
+      cat_toy2 = CatToy.find(2)
+      cat_toy3 = CatToy.find(3)
+      expect(devon.cat_toys).to eq([cat_toy1, cat_toy2, cat_toy3])
     end
   end
 end
